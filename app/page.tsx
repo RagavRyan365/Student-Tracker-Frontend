@@ -1,6 +1,9 @@
 'use client'
 import {useState} from "react";
 
+import Scard from "@/components/studentCard";
+
+
 export default function Home() {
   // State variables to hold the selected department, class section, and year
   const [selectedDepartment, setSelectedDepartment] = useState("cse");
@@ -9,21 +12,23 @@ export default function Home() {
   const [studentData, setStudentData] = useState([]);
 
   return (
-
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
-      <div>
+      <div id="class_selector">
         <h3 className="text-lg font-semibold mb-2">Select Class Details</h3>
+        {/*Department selection section*/}
         <select
           value={selectedDepartment}
           onChange={(e) => setSelectedDepartment(e.target.value)}
           className="border border-gray-300 rounded-md p-2 m-2"
-        >
+          >
           <option value="cse">CSE</option>
           <option value="it">IT</option>
           <option value="ece">ECE</option>
           <option value="eee">EEE</option>
           <option value="mech">MECH</option>
         </select>
+
+        {/*Class Section selection section*/}
         <select
           value={classSection}
           onChange={(e) => setClassSection(e.target.value)}
@@ -34,6 +39,8 @@ export default function Home() {
           <option value="C">Section C</option>
           <option value="D">Section D</option>
         </select>
+
+        {/*Year selection section*/}
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
@@ -45,6 +52,7 @@ export default function Home() {
           <option value="4">Year 4</option>
         </select>
       </div>
+      <Scard sno={10}></Scard>
     </div>
   );
 }
