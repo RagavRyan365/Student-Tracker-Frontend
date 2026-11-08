@@ -43,8 +43,8 @@ export default function StudentCard({
       </div>
 
       {/* Three radio buttons on the right */}
-      <div className="flex flex-col gap-1">
-        <label>
+      <div className="flex flex-col gap-1 ">
+        <label className="flex flex-row">
           <input
             type="radio"
             name={"studentStatus" + sno}
@@ -55,7 +55,7 @@ export default function StudentCard({
           />
           <span className="text-xs mx-1 font-medium text-gray-800 dark:text-gray-200">Present</span>
         </label>
-        <label>
+        <label className="flex flex-row">
           <input
             type="radio"
             name={"studentStatus" + sno}
@@ -66,7 +66,7 @@ export default function StudentCard({
           />
           <span className="text-xs mx-1 font-medium text-gray-800 dark:text-gray-200">Absent</span>
         </label>
-        <label>
+        <label className="flex flex-row">
           <input
             type="radio"
             name={"studentStatus" + sno}
