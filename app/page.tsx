@@ -1,7 +1,14 @@
 'use client'
-import {useState} from "react";
+import { useEffect, useState } from "react";
 
-import Scard from "@/components/studentCard";
+import Scard, { type StudentStatus } from "@/components/studentCard";
+
+interface StudentData{
+  name:string;
+  rollNo:string;
+  registerNo:number;
+  status:StudentStatus;
+}
 
 
 export default function Home() {
@@ -9,7 +16,31 @@ export default function Home() {
   const [selectedDepartment, setSelectedDepartment] = useState("cse");
   const [classSection, setClassSection] = useState("A");
   const [selectedYear, setSelectedYear] = useState("1");
-  const [studentData, setStudentData] = useState([]);
+  /*
+    StudentName;
+    StudentRollNo;
+    StudentRegisterNo;
+    Status - P,A or OD;
+  */
+  const [studentData, setStudentData] = useState<StudentData[]>([{
+    name:"Example Student 1",
+    rollNo:"EXS26123",
+    registerNo:2314567849375729,
+    status:"P",
+  },{
+    name:"Example Student 2",
+    rollNo:"EXS26546",
+    registerNo:23145678493756578,
+    status:"P",
+  }]);
+
+  const handleStudentStatusChange = (index: number, status: StudentStatus) => {
+    setStudentData((currentStudents) =>
+      currentStudents.map((student, studentIndex) =>
+        studentIndex === index ? { ...student, status } : student
+      )
+    );
+  };
 
   return (
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
@@ -52,7 +83,21 @@ export default function Home() {
           <option value="4">Year 4</option>
         </select>
       </div>
-      <Scard sno={10}></Scard>
+      <div>
+        {
+          studentData.map((e,i)=>(
+            <Scard
+              key={i}
+              sno={i+1}
+              studentName={e.name}
+              studentRoll={e.rollNo}
+              studentReg={e.registerNo}
+              status={e.status}
+              onStatusChange={(status) => handleStudentStatusChange(i, status)}
+            />
+          ))
+        }
+      </div>
     </div>
   );
 }
