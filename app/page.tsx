@@ -23,6 +23,7 @@ export default function Home() {
     Status - P,A or OD;
   */
   const [studentData, setStudentData] = useState<StudentData[]>([]);
+  const [isNoStudentLable,setIsNoStudentLable] = useState<boolean>(false);
 
   const handleStudentStatusChange = (index: number, status: StudentStatus) => {
     setStudentData((currentStudents) =>
@@ -32,40 +33,26 @@ export default function Home() {
     );
   };
 
-  //Fetching Students Info intially
-  useEffect(()=>{
-    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`).then((students)=>{
-      setStudentData(
-        students.data.map((s:any)=>{
-          const stu:StudentData = {
-            name:s.name,
-            rollno:s.rollno,
-            registerno:s.registerno,
-            status:"P"
-          }
-          return stu
-        })
-      )
-    })
-    .catch(err=>console.log(err))
-  },[])
-
   useEffect(()=>{
     setStudentData([]);
-    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`).then((students)=>{
-      setStudentData(
-        students.data.map((s:any)=>{
-          const stu:StudentData = {
-            name:s.name,
-            rollno:s.rollno,
-            registerno:s.registerno,
-            status:"P"
-          }
-          return stu
-        })
-      )
-    })
-    .catch(err=>console.log(err))
+    setIsNoStudentLable(false);
+    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`)
+      .then((response) => {
+        setStudentData(
+          response.data.map((student: Omit<StudentData, "status">) => ({
+            ...student,
+            status: "P",
+          }))
+        );
+      })
+      .catch((error:unknown) => {
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
+          setIsNoStudentLable(true);
+          return;
+        }
+
+        console.error("Failed to fetch students", error);
+      });
   },[selectedDepartment,selectedclassSection,selectedYear])
   
 
@@ -111,6 +98,7 @@ export default function Home() {
         </select>
       </div>
       <div>
+        <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-gray-800">No Students</h1>
         {
           studentData.map((e,i)=>(
             <Scard
