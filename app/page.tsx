@@ -1,20 +1,20 @@
 'use client'
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import Scard, { type StudentStatus } from "@/components/studentCard";
 
 interface StudentData{
   name:string;
-  rollNo:string;
-  registerNo:number;
+  rollno:string;
+  registerno:number;
   status:StudentStatus;
 }
 
-
 export default function Home() {
   // State variables to hold the selected department, class section, and year
-  const [selectedDepartment, setSelectedDepartment] = useState("cse");
-  const [classSection, setClassSection] = useState("A");
+  const [selectedDepartment, setSelectedDepartment] = useState("IT");
+  const [selectedclassSection, setClassSection] = useState("C");
   const [selectedYear, setSelectedYear] = useState("1");
   /*
     StudentName;
@@ -22,17 +22,7 @@ export default function Home() {
     StudentRegisterNo;
     Status - P,A or OD;
   */
-  const [studentData, setStudentData] = useState<StudentData[]>([{
-    name:"Example Student 1",
-    rollNo:"EXS26123",
-    registerNo:2314567849375729,
-    status:"P",
-  },{
-    name:"Example Student 2",
-    rollNo:"EXS26546",
-    registerNo:23145678493756578,
-    status:"P",
-  }]);
+  const [studentData, setStudentData] = useState<StudentData[]>([]);
 
   const handleStudentStatusChange = (index: number, status: StudentStatus) => {
     setStudentData((currentStudents) =>
@@ -41,6 +31,43 @@ export default function Home() {
       )
     );
   };
+
+  //Fetching Students Info intially
+  useEffect(()=>{
+    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`).then((students)=>{
+      setStudentData(
+        students.data.map((s:any)=>{
+          const stu:StudentData = {
+            name:s.name,
+            rollno:s.rollno,
+            registerno:s.registerno,
+            status:"P"
+          }
+          return stu
+        })
+      )
+    })
+    .catch(err=>console.log(err))
+  },[])
+
+  useEffect(()=>{
+    setStudentData([]);
+    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`).then((students)=>{
+      setStudentData(
+        students.data.map((s:any)=>{
+          const stu:StudentData = {
+            name:s.name,
+            rollno:s.rollno,
+            registerno:s.registerno,
+            status:"P"
+          }
+          return stu
+        })
+      )
+    })
+    .catch(err=>console.log(err))
+  },[selectedDepartment,selectedclassSection,selectedYear])
+  
 
   return (
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
@@ -52,16 +79,16 @@ export default function Home() {
           onChange={(e) => setSelectedDepartment(e.target.value)}
           className="border border-gray-300 rounded-md p-2 m-2"
           >
-          <option value="cse">CSE</option>
-          <option value="it">IT</option>
-          <option value="ece">ECE</option>
-          <option value="eee">EEE</option>
-          <option value="mech">MECH</option>
+          <option value="CSE">CSE</option>
+          <option value="IT">IT</option>
+          <option value="ECE">ECE</option>
+          <option value="EEE">EEE</option>
+          <option value="MECH">MECH</option>
         </select>
 
         {/*Class Section selection section*/}
         <select
-          value={classSection}
+          value={selectedclassSection}
           onChange={(e) => setClassSection(e.target.value)}
           className="border border-gray-300 rounded-md p-2 m-2"
         >
@@ -90,8 +117,8 @@ export default function Home() {
               key={i}
               sno={i+1}
               studentName={e.name}
-              studentRoll={e.rollNo}
-              studentReg={e.registerNo}
+              studentRoll={e.rollno}
+              studentReg={e.registerno}
               status={e.status}
               onStatusChange={(status) => handleStudentStatusChange(i, status)}
             />

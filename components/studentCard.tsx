@@ -23,10 +23,10 @@ export default function StudentCard({
   // Text weight mapping based on priority:
   // sno-1 (boldest), name-2, roll no-4, register number-6 (lightest)
   return (
-    <div className="flex items-center m-4 gap-4 rounded-sm p-4 shadow-sm min-w-0 dark:bg-gray-900 bg-gray-200">
+    <div className="flex items-center m-4 lg:mr-[40%] gap-4 rounded-sm p-4 shadow-sm min-w-0 dark:bg-gray-900 bg-gray-200">
 
       {/* Student info column */}
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 mr-auto">
             {/* sno, name, roll number horizontal row */}
             <div className="flex items-center gap-2">
                 <span className="font-bold text-xs uppercase tracking-wider">
