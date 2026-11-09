@@ -12,10 +12,15 @@ interface StudentData{
 }
 
 export default function Home() {
+  //backend url from .env
+  const backend = process.env.NEXT_PUBLIC_BACKEND;
+
   // State variables to hold the selected department, class section, and year
   const [selectedDepartment, setSelectedDepartment] = useState("IT");
   const [selectedclassSection, setClassSection] = useState("C");
   const [selectedYear, setSelectedYear] = useState("1");
+  const [classCode,setClassCode] = useState("ITC26");
+
   /*
     StudentName;
     StudentRollNo;
@@ -23,6 +28,8 @@ export default function Home() {
     Status - P,A or OD;
   */
   const [studentData, setStudentData] = useState<StudentData[]>([]);
+
+  //State of the No student lable
   const [isNoStudentLable,setIsNoStudentLable] = useState<boolean>(false);
 
   const handleStudentStatusChange = (index: number, status: StudentStatus) => {
@@ -36,10 +43,11 @@ export default function Home() {
   useEffect(()=>{
     setStudentData([]);
     setIsNoStudentLable(false);
-    axios.get(`http://localhost:5000/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`)
+    axios.get(`${backend}/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`)
       .then((response) => {
+        setClassCode(response.data.classCode[0].classcode);
         setStudentData(
-          response.data.map((student: Omit<StudentData, "status">) => ({
+          response.data.list.map((student: Omit<StudentData, "status">) => ({
             ...student,
             status: "P",
           }))
@@ -59,7 +67,9 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
       <div id="class_selector">
-        <h3 className="text-lg font-semibold mb-2">Select Class Details</h3>
+        <h1 className="text-lg font-semibold mb-2">Select Class Details</h1>
+        <p className="text-gray-400 text-s">Class Code: {classCode}</p>
+
         {/*Department selection section*/}
         <select
           value={selectedDepartment}
@@ -98,7 +108,7 @@ export default function Home() {
         </select>
       </div>
       <div>
-        <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-gray-800">No Students</h1>
+        <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-red-200 m-2">No Students</h1>
         {
           studentData.map((e,i)=>(
             <Scard
@@ -112,7 +122,9 @@ export default function Home() {
             />
           ))
         }
+        
       </div>
+      <button className="dark:bg-green-600 w-40 ml-[48%] bg-green-400 p-2 rounded-md transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 text-black dark:text-white">Mark Attendance</button>
     </div>
   );
 }
