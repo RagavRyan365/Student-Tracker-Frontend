@@ -40,10 +40,20 @@ export default function Home() {
     );
   };
 
+  function markAttendance(){
+    axios.post(`${backend}/api/mark/attendance`,{
+      studentsData:studentData,
+      subjectCode:"ITHS02",
+      classCode:classCode
+    }).then((response)=>{
+      console.log(response.data);
+    })
+  }
+
   useEffect(()=>{
     setStudentData([]);
     setIsNoStudentLable(false);
-    axios.get(`${backend}/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`)
+    axios.get(`${backend}/api/students/${selectedDepartment}/${selectedclassSection}/${selectedYear}`)
       .then((response) => {
         setClassCode(response.data.classCode[0].classcode);
         setStudentData(
@@ -124,7 +134,8 @@ export default function Home() {
         }
         
       </div>
-      <button className="dark:bg-green-600 w-40 ml-[48%] bg-green-400 p-2 rounded-md transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 text-black dark:text-white">Mark Attendance</button>
+      <button className="dark:bg-green-600 w-40 ml-[48%] bg-green-400 p-2 rounded-md transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 text-black dark:text-white"
+      onClick={markAttendance}>Mark Attendance</button>
     </div>
   );
 }
