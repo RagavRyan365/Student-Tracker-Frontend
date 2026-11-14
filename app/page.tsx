@@ -117,7 +117,7 @@ export default function Home() {
           <option value="4">Year 4</option>
         </select>
       </div>
-      <div>
+      <div className="flex flex-col">
         <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-red-200 m-2">No Students</h1>
         {
           studentData.map((e,i)=>(
@@ -132,10 +132,15 @@ export default function Home() {
             />
           ))
         }
-        
       </div>
-      <button className="dark:bg-green-600 w-40 ml-[48%] bg-green-400 p-2 rounded-md transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 text-black dark:text-white"
-      onClick={markAttendance}>Mark Attendance</button>
+      <div className="mt-6 flex justify-end lg:pr-[40%]">
+        <button
+          className="w-40 rounded-md bg-green-400 p-2 text-black transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 dark:bg-green-600 dark:text-white"
+          onClick={markAttendance}
+        >
+          Mark Attendance
+        </button>
+      </div>
     </div>
   );
 }
