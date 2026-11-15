@@ -19,7 +19,7 @@ export default function Home() {
   const [selectedDepartment, setSelectedDepartment] = useState("IT");
   const [selectedclassSection, setClassSection] = useState("C");
   const [selectedYear, setSelectedYear] = useState("1");
-  const [classCode,setClassCode] = useState("ITC26");
+  const [classCode,setClassCode] = useState("ITC2026");
 
   /*
     StudentName;
@@ -31,6 +31,7 @@ export default function Home() {
 
   //State of the No student lable
   const [isNoStudentLable,setIsNoStudentLable] = useState<boolean>(false);
+  const [isAttendanceMarked,setIsAttendanceMarked] = useState<boolean>(false);
 
   const handleStudentStatusChange = (index: number, status: StudentStatus) => {
     setStudentData((currentStudents) =>
@@ -49,6 +50,16 @@ export default function Home() {
       console.log(response.data);
     })
   }
+
+  useEffect(()=>{
+    axios.get(`${backend}/api/verify/attendance/ITHS02/${classCode}`).then((response)=>{
+      setIsAttendanceMarked(false);
+    }).catch((error:unknown)=>{
+      if(axios.isAxiosError(error) && error.response?.status === 400){
+        setIsAttendanceMarked(true);
+      }
+    })
+  },[])
 
   useEffect(()=>{
     setStudentData([]);
@@ -73,7 +84,7 @@ export default function Home() {
       });
   },[selectedDepartment,selectedclassSection,selectedYear])
   
-
+  // if(!isAttendanceMarked)
   return (
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
       <div id="class_selector">
@@ -136,7 +147,7 @@ export default function Home() {
       <div className="mt-6 flex justify-end lg:pr-[40%]">
         <button
           className="w-40 rounded-md bg-green-400 p-2 text-black transition-[1] hover:drop-shadow-lg hover:drop-shadow-green-900 dark:bg-green-600 dark:text-white"
-          onClick={markAttendance}
+          onClick={markAttendance} disabled={isAttendanceMarked}
         >
           Mark Attendance
         </button>
