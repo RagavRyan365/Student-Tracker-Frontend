@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-import Scard, { type StudentStatus } from "@/components/studentCard";
+import ScardEdit, { type StudentStatus } from "@/components/studentCardEdit";
+import Scard from "@/components/studentCard";
+import TopMenu from "@/components/topMenu";
 
 interface StudentData{
   name:string;
@@ -16,10 +18,10 @@ export default function Home() {
   const backend = process.env.NEXT_PUBLIC_BACKEND;
 
   // State variables to hold the selected department, class section, and year
-  const [selectedDepartment, setSelectedDepartment] = useState("IT");
-  const [selectedclassSection, setClassSection] = useState("C");
-  const [selectedYear, setSelectedYear] = useState("1");
-  const [classCode,setClassCode] = useState("ITC2026");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("IT");
+  const [selectedclassSection, setSelectedClassSection] = useState<string>("C");
+  const [selectedYear, setSelectedYear] = useState<number>(1);
+  const [classCode,setClassCode] = useState<string>("ITC2026");
 
   /*
     StudentName;
@@ -41,12 +43,25 @@ export default function Home() {
     );
   };
 
+  const handleDepartmentSelector = (dept:string)=>{
+    setSelectedDepartment(dept);
+  };
+
+  const handleClassSectionSelector = (sec:string)=>{
+    setSelectedClassSection(sec);
+  };
+  
+  const handleYearSelector = (year:number)=>{
+    setSelectedYear(year);
+  }
+
   function markAttendance(){
     axios.post(`${backend}/api/mark/attendance`,{
       studentsData:studentData,
       subjectCode:"ITHS02",
       classCode:classCode
     }).then((response)=>{
+      setIsAttendanceMarked(true);
       console.log(response.data);
     })
   }
@@ -59,7 +74,7 @@ export default function Home() {
         setIsAttendanceMarked(true);
       }
     })
-  },[])
+  },[classCode])
 
   useEffect(()=>{
     setStudentData([]);
@@ -84,55 +99,24 @@ export default function Home() {
       });
   },[selectedDepartment,selectedclassSection,selectedYear])
   
-  // if(!isAttendanceMarked)
-  return (
+  if(!isAttendanceMarked)return (
     <div className="flex min-h-screen flex-col lg:p-24 p-4">
-      <div id="class_selector">
-        <h1 className="text-lg font-semibold mb-2">Select Class Details</h1>
-        <p className="text-gray-400 text-s">Class Code: {classCode}</p>
 
-        {/*Department selection section*/}
-        <select
-          value={selectedDepartment}
-          onChange={(e) => setSelectedDepartment(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 m-2"
-          >
-          <option value="CSE">CSE</option>
-          <option value="IT">IT</option>
-          <option value="ECE">ECE</option>
-          <option value="EEE">EEE</option>
-          <option value="MECH">MECH</option>
-        </select>
-
-        {/*Class Section selection section*/}
-        <select
-          value={selectedclassSection}
-          onChange={(e) => setClassSection(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 m-2"
-        >
-          <option value="A">Section A</option>
-          <option value="B">Section B</option>
-          <option value="C">Section C</option>
-          <option value="D">Section D</option>
-        </select>
-
-        {/*Year selection section*/}
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 m-2"
-        >
-          <option value="1">Year 1</option>
-          <option value="2">Year 2</option>
-          <option value="3">Year 3</option>
-          <option value="4">Year 4</option>
-        </select>
-      </div>
+      <TopMenu 
+        Department={selectedDepartment}
+        classSection={selectedclassSection}
+        year={selectedYear}
+        classc={classCode}
+        onDepartmentChange={(dept)=>handleDepartmentSelector(dept)}
+        onClassSectionChange={(sec)=>handleClassSectionSelector(sec)}
+        onYearChange={(year)=>handleYearSelector(year)}
+      />
+  
       <div className="flex flex-col">
         <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-red-200 m-2">No Students</h1>
         {
           studentData.map((e,i)=>(
-            <Scard
+            <ScardEdit
               key={i}
               sno={i+1}
               studentName={e.name}
@@ -151,6 +135,37 @@ export default function Home() {
         >
           Mark Attendance
         </button>
+      </div>
+    </div>
+  );
+
+  else return(
+    <div className="flex min-h-screen flex-col lg:p-24 p-4">
+
+      <TopMenu 
+        Department={selectedDepartment}
+        classSection={selectedclassSection}
+        year={selectedYear}
+        classc={classCode}
+        onDepartmentChange={(dept)=>handleDepartmentSelector(dept)}
+        onClassSectionChange={(sec)=>handleClassSectionSelector(sec)}
+        onYearChange={(year)=>handleYearSelector(year)}
+      />
+  
+      <div className="flex flex-col">
+        <h1 id="noStudentsLable" style={{display: isNoStudentLable ? "flex" : "none"}} className="text-red-200 m-2">No Students</h1>
+        {
+          studentData.map((e,i)=>(
+            <Scard
+              key={i}
+              sno={i+1}
+              studentName={e.name}
+              studentRoll={e.rollno}
+              studentReg={e.registerno}
+              status={e.status}
+            />
+          ))
+        }
       </div>
     </div>
   );
